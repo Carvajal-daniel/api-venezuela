@@ -1,4 +1,4 @@
-
+// src/modules/Company/domain/value-objects/password.vo.ts
 import { InvalidPasswordError } from "../errors/invalid-password.js";
 
 export class Password {
@@ -22,12 +22,25 @@ export class Password {
     // 2. Validação baseada estritamente nos limites da UI do AppBarber (6 a 15 caracteres)
     if (passwordClean.length < 6 || passwordClean.length > 15) {
       throw new InvalidPasswordError(
-         "A senha deve ter entre 6 e 15 caracteres."
+         "A senha debe tener entre 6 y 15 caracteres."
       );
     }
 
-    // 3. Retorna a instância protegida com o valor higienizado
+    // 3. 🌟 NOVA VALIDAÇÃO: Exige pelo menos um caractere especial
+    if (!this.hasSpecialCharacter(passwordClean)) {
+      throw new InvalidPasswordError(
+        "La contraseña debe contener al menos un carácter especial (ej: @, #, $, !, %, *, ?, &)."
+      );
+    }
+
+    // 4. Retorna a instância protegida com o valor higienizado
     return new Password(passwordClean);
+  }
+
+  // Método estático privado para isolar a regra do Regex
+  private static hasSpecialCharacter(password: string): boolean {
+    const regex = /[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\\/`~]/;
+    return regex.test(password);
   }
 
   get value(): string {

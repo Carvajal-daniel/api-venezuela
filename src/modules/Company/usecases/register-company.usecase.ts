@@ -8,7 +8,7 @@ import * as crypto from 'crypto';
 
 export class CompanyEmailAlreadyInUseError extends Error {
   constructor() {
-    super('Este e-mail já está cadastrado.');
+    super('Este e-mail ya esta registrado.');
     this.name = 'CompanyEmailAlreadyInUseError';
   }
 }
