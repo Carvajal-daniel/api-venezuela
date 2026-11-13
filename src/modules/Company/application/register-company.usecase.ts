@@ -1,31 +1,31 @@
-// src/modules/Company/usecases/register-company.usecase.ts
+import { NameVO } from '../../../shared/value-objects/name.value-object.js';
 import { CompanyEntity, type CompanyProps } from '../domain/entities/company.entity.js';
 import type { CompaniesRepository } from '../domain/repository/companies.repository.interface.js';
 import { CompanyEmail } from '../domain/value-objects/email.vo.js';
-import { Password } from '../domain/value-objects/password.vo.js';
+import { Password } from '../../../shared/value-objects/password.vo.js';
+import { CompanyEmailAlreadyInError } from '../domain/errors/email-already-exyst.js';
 import type { RegisterCompanyInputDTO, RegisterCompanyOutputDTO } from './company-dto.js';
+import type { PasswordHasher } from './ports/password-hasher.js';
 import * as crypto from 'crypto';
 
-export class CompanyEmailAlreadyInUseError extends Error {
-  constructor() {
-    super('Este e-mail ya esta registrado.');
-    this.name = 'CompanyEmailAlreadyInUseError';
-  }
-}
-
 export class RegisterCompanyUseCase {
-  constructor(private readonly companiesRepository: CompaniesRepository) {}
+  constructor(
+    private readonly companiesRepository: CompaniesRepository,
+    private readonly passwordHasher: PasswordHasher,
+  ) {}
 
   async execute(data: RegisterCompanyInputDTO): Promise<RegisterCompanyOutputDTO> {
-    // 1. Instancia os Value Objects passando o dado que já veio limpo pelo Zod universal
+    
+    const companyNameVO = NameVO.create(data.companyName);
+    const nomeVO = NameVO.create(data.name);
     const emailVO = CompanyEmail.create(data.email);
     const passwordVO = Password.create(data.password);
 
-    // 2. Monta as propriedades da entidade direto, sem repetição de código
+   
     const companyProps: CompanyProps = {
       id: crypto.randomUUID(),
-      companyName: data.companyName,
-      name: data.name,
+      companyName: companyNameVO,
+      name: nomeVO,
       phone: data.phone,
       email: emailVO,
       password: passwordVO,
@@ -39,10 +39,12 @@ export class RegisterCompanyUseCase {
     // 3. Regra de negócio: Checa se o e-mail já existe
     const emailExists = await this.companiesRepository.existsByEmail(emailVO);
     if (emailExists) {
-      throw new CompanyEmailAlreadyInUseError();
+      throw new CompanyEmailAlreadyInError();
     }
 
-    await this.companiesRepository.save(company);
+    const passwordHash = await this.passwordHasher.hash(passwordVO.value);
+
+    await this.companiesRepository.save(company, passwordHash);
 
     
     return {

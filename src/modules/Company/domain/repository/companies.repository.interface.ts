@@ -4,5 +4,5 @@ import type { CompanyEmail } from "../value-objects/email.vo.js";
 
 export interface CompaniesRepository {
   existsByEmail(email: CompanyEmail): Promise<boolean>;
-  save(company: CompanyEntity): Promise<void>;
+  save(company: CompanyEntity, passwordHash: string): Promise<void>;
 }

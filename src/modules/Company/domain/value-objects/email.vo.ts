@@ -1,5 +1,4 @@
-import { InvalidEmailError } from "../errors/Invalid-email.js";
-
+import { InvalidEmailError } from "../../../../shared/Errors/invalid-email.js";
 
 
 
@@ -13,12 +12,12 @@ export class CompanyEmail {
 
   static create(email: string): CompanyEmail{
 
-    const emailClean = email.trim().toLowerCase();
+    const emailClean = email.trim().toLocaleLowerCase();
 
     if(!emailClean || !this.validate(emailClean) ){
-      throw new InvalidEmailError()
+      throw new InvalidEmailError("Invalid email format")
     }
-    return new CompanyEmail(emailClean)
+    return new CompanyEmail(email)
   }
 
   private static validate(email:string){

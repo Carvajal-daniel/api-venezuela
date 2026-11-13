@@ -1,0 +1,393 @@
+
+---
+description: Core architectural principles and implementation standards for the SaaS project.
+globs: **/*
+alwaysApply: true
+---
+
+# Project Architecture Rules
+
+## 1. Project Context
+
+This project is a SaaS platform for barbershops and beauty salons.
+
+The system must support business management, collaborators, services, appointments, scheduling, and future automation features.
+
+The architecture must prioritize:
+
+- Maintainability.
+- Scalability.
+- Testability.
+- Separation of concerns.
+- Low coupling.
+- High cohesion.
+- Security.
+- Business rule independence.
+
+## 2. Architectural Approach
+
+The project follows:
+
+- Hexagonal Architecture (Ports and Adapters).
+- Domain-Driven Design (DDD) concepts.
+- Modular organization by business domain.
+- Dependency Inversion Principle.
+- SOLID principles when applicable.
+
+Do not introduce additional architectural patterns without developer approval.
+
+## 3. Current Technology Stack
+
+Use the technologies already established in the project:
+
+- Node.js
+- TypeScript
+- Fastify
+- PostgreSQL
+- Drizzle ORM
+- Zod
+
+Do not replace these technologies or introduce alternative frameworks, ORMs, or validation libraries without explicit approval.
+
+Before adding a dependency, explain why it is necessary and check whether the current stack already provides the required functionality.
+
+## 4. Dependency Rules
+
+The dependency direction must respect the following boundaries:
+
+### Domain
+
+The Domain layer contains the core business rules.
+
+It must NOT depend on:
+
+- Fastify.
+- Drizzle ORM.
+- PostgreSQL.
+- HTTP requests or responses.
+- Infrastructure implementations.
+- External frameworks.
+
+The Domain layer may contain:
+
+- Entities.
+- Value Objects.
+- Domain Services.
+- Domain Events.
+- Business invariants.
+- Domain-specific errors.
+
+### Application
+
+The Application layer coordinates business operations.
+
+It may contain:
+
+- Use Cases.
+- Application Services.
+- Input and Output DTOs.
+- Ports and interfaces.
+- Application-specific errors.
+
+It must NOT depend directly on:
+
+- Fastify.
+- Drizzle ORM.
+- Database implementations.
+- HTTP-specific objects.
+
+Application services must communicate with external dependencies through abstractions.
+
+### Infrastructure
+
+The Infrastructure layer implements technical details.
+
+It may contain:
+
+- Database repositories.
+- Drizzle schemas.
+- Database connections.
+- HTTP controllers and routes.
+- External service integrations.
+- Cryptography adapters.
+- Framework configurations.
+
+Infrastructure may depend on Application and Domain, but those layers must not depend on Infrastructure.
+
+## 5. Modular Organization
+
+Organize the application by business module.
+
+Examples:
+
+- Company
+- Collaborators
+- Users
+- Services
+- Appointments
+- Scheduling
+- Notifications
+- Automations
+
+Each module should own its business rules and responsibilities.
+
+A module must not access another module's internal implementation directly.
+
+Communication between modules should happen through explicitly defined contracts or public interfaces.
+
+Do not create empty modules or unnecessary abstractions just to anticipate hypothetical future requirements.
+
+## 6. Current Folder Structure
+
+Respect the existing project structure.
+
+The current modules use folders such as:
+
+```text
+modules/
+└── Company/
+    ├── domain/
+    ├── usecases/
+    └── infra/
+        ├── database/
+        └── http/
+```
+
+The architecture may evolve toward a more explicit Application layer:
+
+```text
+modules/
+└── Company/
+    ├── domain/
+    ├── application/
+    │   ├── use-cases/
+    │   ├── ports/
+    │   └── dtos/
+    └── infrastructure/
+        ├── database/
+        └── http/
+```
+
+However:
+
+- Do not reorganize existing folders automatically.
+- Do not rename folders without developer approval.
+- Do not move multiple files just to make the structure match an example.
+- Suggest structural improvements before implementing them.
+
+The examples describe architectural responsibilities, not mandatory immediate migrations.
+
+## 7. Use Cases
+
+Each Use Case must represent a specific application action.
+
+Examples:
+
+- RegisterCompany.
+- CreateCollaborator.
+- CreateAppointment.
+- CancelAppointment.
+
+Use Cases must:
+
+- Coordinate the operation.
+- Validate application-level requirements.
+- Call Domain behavior when appropriate.
+- Use interfaces to access external dependencies.
+- Return clear and predictable outputs.
+
+Use Cases must not:
+
+- Handle HTTP requests directly.
+- Execute SQL directly.
+- Depend on Drizzle.
+- Contain framework-specific logic.
+- Accumulate unrelated business responsibilities.
+
+## 8. Ports and Adapters
+
+External dependencies must be accessed through abstractions when they are relevant to the application's business operations.
+
+Examples of possible ports:
+
+- CompaniesRepository.
+- CollaboratorsRepository.
+- AppointmentsRepository.
+- PasswordHasher.
+- IdGenerator.
+- NotificationSender.
+
+Infrastructure implements these contracts through adapters.
+
+Use constructor dependency injection instead of importing global infrastructure singletons directly into Use Cases or repositories.
+
+Avoid creating abstractions without a real need.
+
+## 9. Database Rules
+
+PostgreSQL is the primary database.
+
+Drizzle ORM is the persistence tool.
+
+Requirements:
+
+- Keep database schemas in Infrastructure.
+- Keep database queries outside the Domain layer.
+- Do not expose Drizzle models as Domain entities.
+- Map database records into appropriate Domain objects.
+- Use migrations for schema changes.
+- Keep migrations consistent and versioned.
+- Apply database constraints for important business invariants.
+- Handle database errors without exposing internal details.
+
+Do not modify existing migrations or delete migration files without analyzing their history and dependencies first.
+
+## 10. Validation
+
+Use Zod at external input boundaries, such as HTTP requests.
+
+Domain invariants must be protected by the Domain itself.
+
+Avoid duplicating validation rules in multiple places.
+
+When a rule exists in a Value Object, reuse the Domain behavior instead of creating conflicting validation logic.
+
+Normalize data consistently before storing it.
+
+Examples include:
+
+- Email addresses.
+- Phone numbers.
+- Names.
+- Password input.
+
+## 11. Error Handling
+
+Keep Domain errors independent of HTTP.
+
+Domain errors must not contain HTTP status codes or depend on Fastify.
+
+Application errors must represent failures related to executing application operations.
+
+Infrastructure is responsible for translating errors into appropriate HTTP responses.
+
+Never return raw internal exceptions or stack traces to API consumers.
+
+Use centralized error handling.
+
+## 12. Security
+
+Security must be considered in every implementation.
+
+Requirements:
+
+- Never store plaintext passwords.
+- Never use plain SHA-256 as a password hashing strategy.
+- Use a dedicated password hashing abstraction and an appropriate password hashing algorithm.
+- Validate external input.
+- Never expose sensitive information in API responses.
+- Protect authenticated operations.
+- Verify authorization before accessing protected resources.
+- Avoid insecure direct object references.
+- Apply rate limiting where appropriate.
+- Keep secrets in environment variables.
+- Never hardcode credentials or secret keys.
+
+Do not implement authentication or authorization by assuming that an unverified user or company identifier is trustworthy.
+
+## 13. Multi-Tenancy
+
+The platform is intended to support multiple businesses.
+
+Tenant isolation is a fundamental architectural requirement.
+
+Whenever tenant-scoped functionality is implemented:
+
+- Identify the authenticated tenant context.
+- Validate that the user has access to that tenant.
+- Scope database operations to the authorized tenant.
+- Never trust a tenant ID supplied only by the client.
+- Prevent access to records belonging to another tenant.
+- Consider tenant isolation in repositories, use cases, and tests.
+
+Do not assume that multi-tenancy is already fully implemented.
+
+If tenant boundaries or access rules are not yet defined, ask the developer before implementing them.
+
+## 14. Testing
+
+New business logic must be testable independently of infrastructure.
+
+Prioritize:
+
+- Unit tests for Domain behavior.
+- Unit tests for Use Cases.
+- Integration tests for repositories.
+- HTTP tests for controllers and routes.
+- Tests for authorization and tenant isolation.
+
+Use dependency injection to make tests independent of PostgreSQL and external services whenever possible.
+
+Do not consider a feature complete merely because the code compiles.
+
+## 15. Code Quality
+
+All code must:
+
+- Use TypeScript types properly.
+- Avoid unnecessary use of `any`.
+- Have clear and descriptive names.
+- Follow existing naming conventions.
+- Avoid duplicated business logic.
+- Keep functions and classes focused.
+- Handle asynchronous operations correctly.
+- Avoid unnecessary complexity.
+
+Do not create abstractions, interfaces, factories, or services without a clear purpose.
+
+## 16. Implementation Workflow
+
+Before implementing a feature:
+
+1. Inspect the existing module.
+2. Understand the current architecture.
+3. Identify the affected layers.
+4. Check existing interfaces and implementations.
+5. Identify possible impacts on other modules.
+6. Propose necessary architectural changes before making them.
+
+During implementation:
+
+- Follow existing conventions.
+- Modify only files necessary for the task.
+- Preserve existing behavior unless a change is requested.
+- Avoid unrelated refactoring.
+- Do not introduce new dependencies without approval.
+
+After implementation:
+
+1. Check TypeScript compilation.
+2. Run relevant tests.
+3. Check for architectural violations.
+4. Explain the files changed.
+5. Explain any remaining limitations.
+
+## 17. Developer Authority
+
+The developer is responsible for defining and approving the architecture.
+
+The AI acts as an implementation assistant.
+
+The AI must not independently:
+
+- Change the architectural approach.
+- Replace the technology stack.
+- Reorganize the entire project.
+- Introduce new architectural dependencies.
+- Change business rules.
+- Make irreversible database changes.
+- Modify architectural rules without approval.
+
+When an architectural decision is necessary but not defined, explain the alternatives and ask the developer.
+
+The objective is to implement the developer's architecture consistently, not to redesign it autonomously.

@@ -1,4 +1,4 @@
-import { AppError } from "../../../../shared/Errors/app-errors.js";
+import { AppError } from "./app-errors.js";
 
 
 export class InvalidPasswordError extends AppError {

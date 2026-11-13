@@ -1,0 +1,111 @@
+
+---
+description: Guidelines for identifying recurring code patterns and proposing improvements to project rules.
+globs: **/*
+alwaysApply: true
+---
+
+# Continuous Improvement of Project Rules
+
+## 1. Objective
+
+Continuously identify opportunities to improve code consistency, maintainability, security, and architecture.
+
+The goal is to evolve the project's standards based on real implementation patterns.
+
+The AI must preserve the architectural decisions established by the developer.
+
+## 2. Improvement Triggers
+
+Look for:
+
+- Repeated code patterns.
+- Repeated implementation mistakes.
+- Inconsistent error handling.
+- Duplicated validation logic.
+- Repeated database access patterns.
+- Security vulnerabilities.
+- Inconsistent testing practices.
+- New libraries or technologies approved for the project.
+- Architectural violations.
+
+## 3. Analysis Process
+
+When identifying a possible improvement:
+
+1. Analyze the relevant existing code.
+2. Check the current Cursor rules.
+3. Compare the implementation with the established architecture.
+4. Identify inconsistencies and recurring patterns.
+5. Determine whether the issue is isolated or systematic.
+6. Propose a specific improvement.
+
+Do not assume that every repeated pattern should become a rule.
+
+Consider the importance, frequency, and impact of the pattern.
+
+Security and architectural issues may require attention even when they occur in only one file.
+
+## 4. When to Propose New Rules
+
+Propose a new rule when:
+
+- A recurring pattern needs standardization.
+- A common mistake can be prevented.
+- An architectural boundary needs clarification.
+- A security requirement must be consistently enforced.
+- An approved technology requires specific implementation guidelines.
+
+## 5. When to Modify Existing Rules
+
+Propose modifications when:
+
+- Existing instructions are outdated.
+- New edge cases have been discovered.
+- The implementation has evolved.
+- Two rules overlap or conflict.
+- Better examples are available in the codebase.
+
+## 6. Approval Requirement
+
+The AI must NEVER modify, remove, or replace Cursor rules automatically.
+
+Before changing any rule:
+
+1. Explain the identified problem.
+2. Explain why the current rule is insufficient.
+3. Show the proposed modification.
+4. Identify which files will be affected.
+5. Wait for explicit developer approval.
+
+## 7. Rule Quality
+
+All rules must be:
+
+- Specific and actionable.
+- Consistent with the project architecture.
+- Based on actual project requirements.
+- Free from unnecessary repetition.
+- Easy to understand and maintain.
+
+## 8. Deprecation
+
+When a rule becomes outdated:
+
+- Identify the reason.
+- Explain its impact.
+- Propose the replacement or removal.
+- Wait for developer approval.
+
+Never silently remove existing architectural instructions.
+
+## 9. Priority
+
+When rules conflict, follow this priority:
+
+1. Explicit architectural decisions made by the developer.
+2. Project architecture rules.
+3. Domain-specific rules.
+4. General coding conventions.
+
+If a conflict cannot be resolved, ask the developer before proceeding.

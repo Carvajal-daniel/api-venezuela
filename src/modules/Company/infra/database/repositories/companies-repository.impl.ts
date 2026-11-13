@@ -1,5 +1,4 @@
 
-import { createHash, randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db } from "../../../../../shared/database/database.js";
 
@@ -10,12 +9,7 @@ import type { CompanyEmail } from "../../../domain/value-objects/email.vo.js";
 
 export class CompanyRepositoryDB implements CompaniesRepository {
   
-  async save(company: CompanyEntity): Promise<void> {
-    const salt = randomBytes(16).toString("hex");
-    const passwordHash = createHash("sha256")
-      .update(`${salt}:${company.password}`)
-      .digest("hex");
-
+  async save(company: CompanyEntity, passwordHash: string): Promise<void> {
     await db
       .insert(CompanyTable)
       .values({
@@ -24,7 +18,7 @@ export class CompanyRepositoryDB implements CompaniesRepository {
         name: company.name,
         phone: company.phone,
         email: company.email,
-        password: `sha256$${salt}$${passwordHash}`,
+        password: passwordHash,
         isActive: company.isActive,
         createdAt: company.createdAt,
         updatedAt: company.updatedAt,

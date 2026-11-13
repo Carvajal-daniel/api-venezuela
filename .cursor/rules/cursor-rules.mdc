@@ -1,0 +1,80 @@
+
+---
+description: Guidelines for creating, organizing, and maintaining Cursor rules in this project.
+globs:
+alwaysApply: true
+---
+
+# Cursor Rules Organization
+
+## 1. Location
+
+All Cursor rule files must be placed inside:
+
+`.cursor/rules/`
+
+Example:
+
+```text
+.cursor/
+└── rules/
+    ├── cursor-rules.mdc
+    ├── continuous-improvement.mdc
+    └── architecture.mdc
+```
+
+## 2. Naming Convention
+
+- Use descriptive names.
+- Use kebab-case.
+- Always use the `.mdc` extension.
+- Avoid duplicated or overlapping rules.
+
+## 3. Rule File Structure
+
+Every rule must follow this format:
+
+```markdown
+---
+description: Short description of the rule.
+globs: optional/file/pattern/**
+alwaysApply: false
+---
+
+# Rule Title
+
+Detailed instructions.
+```
+
+## 4. Before Creating a Rule
+
+Before creating a new rule:
+
+1. Check the existing rules.
+2. Identify whether an existing rule already covers the subject.
+3. Prefer updating an existing rule over creating duplicates.
+4. Keep rules specific, objective, and actionable.
+5. Include examples when they clarify the expected implementation.
+
+## 5. Project-Specific Requirements
+
+- Rules must reflect the actual technologies and architecture used by this project.
+- Do not introduce libraries, frameworks, or architectural patterns without approval.
+- Do not use examples from technologies that are not part of the project.
+- Keep examples consistent with the current codebase.
+
+## 6. User Approval
+
+The developer is responsible for architectural decisions.
+
+The AI must not independently:
+
+- Change architectural standards.
+- Remove or replace existing rules.
+- Introduce new architectural patterns.
+- Change the project's folder organization.
+- Create rules that conflict with existing decisions.
+
+When a change to the rules is necessary, explain the reason and propose the modification first.
+
+Wait for explicit approval before applying changes to existing rules.

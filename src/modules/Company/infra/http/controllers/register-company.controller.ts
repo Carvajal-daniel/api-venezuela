@@ -1,6 +1,6 @@
 
 import type { FastifyRequest, FastifyReply } from "fastify";
-import type { RegisterCompanyUseCase } from "../../../usecases/register-company.usecase.js";
+import type { RegisterCompanyUseCase } from "../../../application/register-company.usecase.js";
 import { registerCompanySchema } from "../../../../../shared/utils/validation-schemas.js";
 
 export class RegisterCompanyController {

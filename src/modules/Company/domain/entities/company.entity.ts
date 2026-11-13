@@ -1,12 +1,13 @@
 
+import type { NameVO } from '../../../../shared/value-objects/name.value-object.js';
 import type { CompanyEmail } from '../value-objects/email.vo.js';
-import type { Password } from '../value-objects/password.vo.js';
+import type { Password } from '../../../../shared/value-objects/password.vo.js';
 
 
 export interface CompanyProps {
   id: string; 
-  companyName: string;
-  name: string;
+  companyName: NameVO;
+  name: NameVO;
   phone: string;
   email: CompanyEmail;      
   password: Password;
@@ -25,10 +26,10 @@ export class CompanyEntity {
     return new CompanyEntity(props);
   }
 
-  // 🛡️ Getters públicos expondo primitivos/valores limpos para os Casos de Uso e Reposórios
+
   get id(): string { return this.props.id; }
-  get companyName(): string { return this.props.companyName; }
-  get name(): string { return this.props.name; }
+  get companyName(): string { return this.props.companyName.value; }
+  get name(): string { return this.props.name.value; }
   get phone(): string { return this.props.phone; }
   get email(): string { return this.props.email.value; }
   get password(): string { return this.props.password.value; }

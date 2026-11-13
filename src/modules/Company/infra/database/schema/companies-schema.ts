@@ -1,16 +1,15 @@
 import { boolean, pgTable, text, timestamp, uuid, index } from "drizzle-orm/pg-core";
 
 export const CompanyTable = pgTable("companies", { 
-  // Alterado para UUID automático do Postgres para evitar conflitos e IDs previsíveis
+
   id: uuid("id").primaryKey().defaultRandom(),
   
-  // Nome da Barbearia*
+
   companyName: text("company_name").notNull(),
   
   // Nome do contato*
   name: text("name").notNull(),
   
-  // Celular do Contato* (Na imagem tem a bandeira do país, ideal salvar formato internacional)
   phone: text("phone").notNull(),
   
   // E-mail Para Acesso*
